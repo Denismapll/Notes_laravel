@@ -34,11 +34,18 @@
                                             {{ $message }}
                                         </div>
                                     @enderror
+
                                 </div>
                                 <div class="mb-3">
                                     <button type="submit" class="btn btn-secondary w-100">LOGIN</button>
                                 </div>
                             </form>
+                            {{-- invalid login --}}
+                            @if (@session('loginError'))
+                                <div class="alert alert-danger">
+                                    {{session('loginError')}}
+                                </div>
+                            @endif
                         </div>
                     </div>
 
