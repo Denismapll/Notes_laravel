@@ -14,7 +14,7 @@ class MainController extends Controller
     {
         // load user's notes
         $id = session('user.id');
-        $notes = User::find($id)->notes()->get()->toArray();
+        $notes = User::find($id)->notes()->whereNull('deleted_at')->get()->toArray();
 
         return view('home', ['notes' => $notes]);
     }
@@ -24,8 +24,9 @@ class MainController extends Controller
         return view('newNote');
     }
 
-    public function newNoteSubmit(Request $request){
-        
+    public function newNoteSubmit(Request $request)
+    {
+
         // validate request
 
         $request->validate(
@@ -67,16 +68,20 @@ class MainController extends Controller
         // $id = $this->decryptId($id);
         $id = Operations::decryptId($id);
 
+        if($id === null) {
+            return redirect()->route('home');
+        }
+
         // load note
         $note = Note::find($id);
 
         // show edit note view
 
-        return view('edit_note', ['note'=> $note]);
-
+        return view('edit_note', ['note' => $note]);
     }
 
-    public function editNoteSubmit(Request $request) {
+    public function editNoteSubmit(Request $request)
+    {
 
         // validation
 
@@ -97,12 +102,16 @@ class MainController extends Controller
         );
 
         // check if note_id exists
-        if($request->note_id == null) {
+        if ($request->note_id == null) {
             return redirect()->route('home');
         }
 
         // decrypt note_id
         $id = Operations::decryptId($request->note_id);
+
+        if($id === null) {
+            return redirect()->route('home');
+        }
 
         // load note
         $note = Note::find($id);
@@ -111,17 +120,52 @@ class MainController extends Controller
         $note->title = $request->text_title;
         $note->text = $request->text_note;
         $note->save();
-        
+
         // redirect to home
         return redirect()->route('home');
-
     }
 
     public function deleteNote($id)
     {
         $id = Operations::decryptId($id);
 
-        
+        if($id === null) {
+            return redirect()->route('home');
+        }
+
+        // load note
+        $note = Note::find($id);
+
+        // show delete confirmation
+        return view('delete_note', ['note' => $note]);
     }
 
+    public function deleteNoteConfirm($id)
+    {
+        // check if $id is encrypted
+        $id = Operations::decryptId($id);
+
+        if($id === null) {
+            return redirect()->route('home');
+        }
+
+        // load note
+        $note = Note::find($id);
+
+        // 1. hard delete
+        // $note->delete();
+
+        // 2. soft delete
+        // $note->deleted_at = date('Y:m:d H:i:s');
+        // $note->save();
+
+        // 3. soft delete (property in model)
+        // $note->delete();
+
+        // 4. hard delete (property in model)
+        $note->forceDelete();
+
+        // redirect to home
+        return redirect()->route('home');
+    }
 }
