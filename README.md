@@ -108,9 +108,3 @@ Acesse: [http://localhost:8000](http://localhost:8000)
 - Este projeto usa **SQLite**, portanto não é necessário instalar MySQL ou PostgreSQL.
 - Ideal para testes e estudos locais com Laravel.
 - Sistema de notas simples com autenticação pronta para expandir.
-
----
-
-## 🧑‍💻 Autor
-
-Desenvolvido por [Seu Nome ou Denis] 🚀
